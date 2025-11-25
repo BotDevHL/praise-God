@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>I’m OK</title>
+
 <style>
   body {
     margin: 0;
@@ -12,12 +13,7 @@
     font-family: "Courier New", monospace;
     overflow-x: hidden;
   }
-  .repeat {
-    padding: 20px;
-    line-height: 2;
-    font-size: 1.4rem;
-    white-space: pre-wrap;
-  }
+
   .glitch {
     position: fixed;
     top: 10%;
@@ -29,10 +25,12 @@
     animation: flicker 2s infinite;
     pointer-events: none;
   }
+
   @keyframes flicker {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+
   .flash {
     position: fixed;
     inset: 0;
@@ -41,27 +39,156 @@
     pointer-events: none;
     transition: opacity 0.1s;
   }
+
+  .repeat {
+    padding: 20px;
+    line-height: 2;
+    font-size: 1.4rem;
+    white-space: pre-wrap;
+  }
+
+  .scare-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 20px;
+    color: #b10000;
+    background: black;
+    border: 2px solid #b10000;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .scare-btn:hover {
+    background: #b10000;
+    color: black;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #b10000;
+  }
+
+  #scare-img {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.1s;
+  }
+
+  #scare-img img {
+    width: 90%;
+    max-width: 500px;
+  }
+
+  .stay-msg {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+    opacity: 0;
+    text-align: center;
+    white-space: pre-line;
+    animation: none;
+    transition: opacity 0.6s;
+  }
+
+  @keyframes shake {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    25% { transform: translate(calc(-50% + 3px), calc(-50% + 2px)) rotate(1deg); }
+    50% { transform: translate(calc(-50% - 3px), calc(-50% - 3px)) rotate(-1deg); }
+    75% { transform: translate(calc(-50% + 2px), calc(-50% - 2px)) rotate(0.5deg); }
+    100% { transform: translate(-50%, -50%) rotate(0deg); }
+  }
 </style>
 </head>
+
 <body>
+
 <div class="glitch">i’m ok</div>
 <div class="flash" id="flash"></div>
 
+<div style="text-align:center; margin-top:200px;">
+  <div class="scare-btn" onclick="triggerGlitch()">Don’t Press This</div>
+  <div class="scare-btn" onclick="triggerScare()">I Said Don’t</div>
+  <div class="scare-btn" onclick="whisper()">Why Are You Still Here?</div>
+</div>
+
 <div class="repeat" id="text"></div>
 
+<div id="scare-img">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDUwMCA1MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwMCIgaGVpZ2h0PSI1MDAiIGZpbGw9IiMwMDAiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxNzAiIHI9IjYwIiBmaWxsPSIjZjAwIi8+PGNpcmNsZSBjeD0iMzUwIiBjeT0iMTcwIiByPSI2MCIgZmlsbD0iI2YwMCIvPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iNTAiIHg9IjE1MCIgeT0iMzUwIiBmaWxsPSIjZjAwIi8+PC9zdmc+" />
+</div>
+
+<div id="stayMsg" class="stay-msg"></div>
+
 <script>
+  // Fill page with text
   const container = document.getElementById("text");
-  const phrase = "i’m ok ";
   let block = "";
-  for (let i = 0; i < 800; i++) block += phrase;
+  for (let i = 0; i < 800; i++) block += "i’m ok ";
   container.textContent = block;
 
+  // Flash effect
   function randomFlash() {
     const flash = document.getElementById("flash");
     flash.style.opacity = Math.random() < 0.1 ? "1" : "0";
     setTimeout(randomFlash, 150);
   }
   randomFlash();
+
+  function triggerGlitch() {
+    document.body.style.filter = "blur(3px)";
+    setTimeout(() => document.body.style.filter = "none", 300);
+  }
+
+  function triggerScare() {
+    const scare = document.getElementById("scare-img");
+    scare.style.opacity = "1";
+    setTimeout(() => scare.style.opacity = "0", 400);
+  }
+
+  function whisper() {
+    alert("i’m right behind you.");
+  }
+
+  // --- CLEAR VISIBLE HORROR MESSAGES ---
+  const stayMsg = document.getElementById("stayMsg");
+
+  function showMsg(text) {
+    stayMsg.textContent = text;
+    stayMsg.style.opacity = 1;
+    stayMsg.style.animation = "shake 0.3s infinite";
+
+    setTimeout(() => {
+      stayMsg.style.opacity = 0;
+      stayMsg.style.animation = "none";
+    }, 6000);
+  }
+
+  // After 10 seconds
+  setTimeout(() => {
+    showMsg("Mr David is going to stress me out.");
+  }, 10000);
+
+  // After 20 seconds
+  setTimeout(() => {
+    showMsg("My family is falling apart thanks to the police.");
+  }, 20000);
+
+  // After 30 seconds — fake IP scare
+  setTimeout(() => {
+    showMsg("I have your IP:\n127.0.0.1");
+  }, 30000);
 </script>
+
 </body>
 </html>
