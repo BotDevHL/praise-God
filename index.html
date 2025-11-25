@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title> i’m fine — leave. </title>
+<title>I’m Fine — Leave.</title>
 
 <style>
   body {
@@ -26,18 +26,13 @@
     margin: 20px auto;
     display: block;
     width: 80%;
-    max-width: 300px;
+    max-width: 320px;
   }
 
-  .warningBtn:hover {
-    background: red;
-  }
+  .warningBtn:hover { background: red; }
 
   #msgBox {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     background: rgba(20,0,0,0.8);
     padding: 10px 20px;
     color: red;
@@ -50,43 +45,55 @@
 
   .scareScreen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    color: darkred;
-    font-size: 55px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999998;
-    opacity: 0;
-    transition: opacity 1.5s ease;
-    text-align: center;
-    padding: 20px;
-    pointer-events: none;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: black; color: darkred;
+    font-size: 42px;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 20px; text-align: center;
     white-space: pre-line;
+    opacity: 0; pointer-events: none;
+    transition: opacity 1s ease;
+    z-index: 999998;
   }
 
-  #backBtn {
-    position: absolute;
-    bottom: 40px;
-    padding: 15px 25px;
+  .backBtn {
+    margin-top: 40px;
+    padding: 12px 20px;
     background: darkred;
     color: white;
     border: none;
-    font-size: 18px;
-    cursor: pointer;
+    font-size: 20px;
     display: none;
   }
 
-  #jumpscare {
-    font-size: 100px;
-    color: white;
-    opacity: 0;
+  #demonFlash {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: white;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.05s ease;
+    z-index: 3000000;
+  }
+
+  #cornerShadow {
+    position: fixed; bottom: 0; right: 0;
+    width: 140px; height: 280px;
+    background: rgba(0,0,0,0.7);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
     z-index: 999999;
-    transition: opacity 0.2s ease;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  #blackoutScreen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: black; color: white;
+    font-size: 40px; opacity: 0;
+    display: flex; justify-content: center; align-items: center;
+    pointer-events: none;
+    z-index: 5000000;
+    transition: opacity 0.4s ease;
   }
 
   .glitch { animation: glitch 0.3s infinite; }
@@ -95,256 +102,208 @@
     50% { text-shadow: -3px -3px #800; }
     100% { text-shadow: 2px -2px darkred; }
   }
-
-  #staticOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2000000;
-    pointer-events: none;
-    background: url('data:image/svg+xml,\
-      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">\
-      <filter id="noise">\
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3"/>\
-      </filter>\
-      <rect width="100%" height="100%" filter="url(#noise)" />\
-      </svg>'
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  #shadowFigure {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.9) 100%);
-    opacity: 0;
-    z-index: 999900;
-    pointer-events: none;
-    transition: opacity 2.5s ease;
-  }
-
-  .flicker { animation: flickerAnim 0.2s infinite; }
-  @keyframes flickerAnim {
-    0% { opacity: 1; }
-    50% { opacity: 0.3; }
-    100% { opacity: 1; }
-  }
 </style>
 </head>
 
 <body>
 
-<h1 class="glitch">Do NOT press any of the buttons.</h1>
+<h1 class="glitch">Do NOT press any buttons.</h1>
 
 <button id="btn1" class="warningBtn">DON'T PRESS THIS</button>
 <button id="btn2" class="warningBtn">DO NOT LOOK HERE</button>
 <button id="btn3" class="warningBtn">SERIOUSLY, STOP</button>
 <button id="btnAI" class="warningBtn">Do you want to know how I feel?</button>
-
-<!-- NEW BUTTON -->
-<button id="btnKnow" class="warningBtn">I know you...</button>
+<button id="btnKnow" class="warningBtn">I know you…</button>
 
 <div id="msgBox"></div>
 
-<div id="dareScreen" class="scareScreen">HOW DARE YOU</div>
-<div id="warnScreen" class="scareScreen">I WARNED YOU</div>
-<div id="stopScreen" class="scareScreen">YOU NEVER LISTEN</div>
+<!-- SCARE SCREENS -->
+<div id="dareScreen"    class="scareScreen"><span>HOW DARE YOU</span><button class="backBtn">Go Back</button></div>
+<div id="warnScreen"    class="scareScreen"><span>I WARNED YOU</span><button class="backBtn">Go Back</button></div>
+<div id="stopScreen"    class="scareScreen"><span>YOU NEVER LISTEN</span><button class="backBtn">Go Back</button></div>
+<div id="presenceScreen"class="scareScreen"><span>WHY ARE YOU STILL HERE?</span><button class="backBtn">Go Back</button></div>
+<div id="delayedScreen" class="scareScreen"><span>YOU SHOULDN’T HAVE STAYED THIS LONG</span><button class="backBtn">Go Back</button></div>
+<div id="aiScreen"      class="scareScreen"><span>SYSTEM STATUS: NOT STABLE</span><button class="backBtn">Go Back</button></div>
+<div id="knowScreen"    class="scareScreen"><span id="knowText">you work in sris right?</span><button class="backBtn">Go Back</button></div>
+<div id="terminalScreen" class="scareScreen"><span id="terminalText"></span><button class="backBtn">Go Back</button></div>
 
-<div id="presenceScreen" class="scareScreen">
-  WHY ARE YOU STILL HERE?
-  <button id="backBtn">Go back</button>
+<!-- PERSONAL SCARE -->
+<div id="nameScreen" class="scareScreen">
+  <span id="nameText">Isn’t your name…  
+<span id="fakeGuess" style="color:white;">Sarah</span>?</span>
+  <button class="backBtn">Go Back</button>
 </div>
 
-<div id="delayedScreen" class="scareScreen">YOU SHOULDN'T HAVE STAYED THIS LONG</div>
-
-<div id="aiScreen" class="scareScreen">SYSTEM STATUS: NOT STABLE</div>
-
-<div id="knowScreen" class="scareScreen">you work in sris right?</div>
-
-<div id="terminalScreen" class="scareScreen"></div>
-
-<div id="staticOverlay"></div>
-<div id="shadowFigure"></div>
-
-<div id="jumpscare" class="scareScreen">BOO</div>
+<div id="cornerShadow"></div>
+<div id="demonFlash"></div>
+<div id="blackoutScreen">system integrity compromised</div>
 
 <script>
-/* Audio */
-const whisperAudio = new Audio("https://www.myinstants.com/media/sounds/creepy-whisper.mp3");
-whisperAudio.volume = 0.4;
-function randomWhisper() {
-  if (Math.random() < 0.25) whisperAudio.play();
-  setTimeout(randomWhisper, 6000);
-}
-randomWhisper();
+/* ----------------------------------------------------
+   PERSONALIZATION SYSTEM
+---------------------------------------------------- */
+let fakeNameList = ["Sarah","Mia","Aiden","Emily","Noah","Liam","Ava","Isabella"];
+let fakeGuess = fakeNameList[Math.floor(Math.random()*fakeNameList.length)];
+document.getElementById("fakeGuess").innerText = fakeGuess;
 
-function playHeartbeat(){
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
-  osc.frequency.value=60;
-  gain.gain.setValueAtTime(0.7,ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.start(); osc.stop(ctx.currentTime+0.3);
-}
-setInterval(()=>{ if(Math.random()<0.1) playHeartbeat(); },2500);
+let realName = null;
 
-function playDistortion(){
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
-  osc.type="square";
-  osc.frequency.value=200+Math.random()*400;
-  gain.gain.setValueAtTime(0.7,ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.start(); osc.stop(ctx.currentTime+0.4);
-}
+/* Ask for name after a delay */
+setTimeout(()=>{
+  realName = prompt("…what’s your name?");
+  if(!realName) realName = fakeGuess;
+
+  // Use their name everywhere
+  document.getElementById("knowText").innerText =
+    "I already knew your name, " + realName + ".";
+
+}, 15000);
+
+
+/* ----------------------------------------------------
+   HELPERS
+---------------------------------------------------- */
 
 function showMsg(t){
   const m=document.getElementById("msgBox");
   m.innerText=t;
   m.style.opacity=1;
-  setTimeout(()=>m.style.opacity=0,2000);
+  setTimeout(()=>m.style.opacity=0,2500);
 }
 
-function showScare(id,msg){
+function showScare(id,text){
   const s=document.getElementById(id);
+  if(text) s.querySelector("span").innerText = text;
   s.style.opacity=1;
   s.style.pointerEvents="all";
-  document.body.classList.add("flicker");
-  showMsg(msg);
+  let btn=s.querySelector(".backBtn");
+  btn.style.display="block";
 }
 
-btn1.onclick=()=>showScare("dareScreen","...you shouldn't have done that.");
-btn2.onclick=()=>showScare("warnScreen","You were told not to look.");
-btn3.onclick=()=>showScare("stopScreen","I told you to stop...");
+function hideScare(id){
+  const s=document.getElementById(id);
+  s.style.opacity=0;
+  s.style.pointerEvents="none";
+}
+
+/* Attach all back buttons */
+document.querySelectorAll(".backBtn").forEach(btn=>{
+  btn.onclick = (e)=>{
+    let screen = e.target.parentElement.id;
+    hideScare(screen);
+  };
+});
+
+/* ----------------------------------------------------
+   BUTTON ACTIONS
+---------------------------------------------------- */
+btn1.onclick=()=>showScare("dareScreen","How dare you, " + (realName||fakeGuess));
+btn2.onclick=()=>showScare("warnScreen","You were told not to look, " + (realName||fakeGuess));
+btn3.onclick=()=>showScare("stopScreen","You never listen, " + (realName||fakeGuess));
 
 btnAI.onclick=()=>{
-  const s=document.getElementById("aiScreen");
-  s.innerText="SYSTEM STATUS: NOT STABLE";
-  s.style.opacity=1;
-  setTimeout(()=>{ playDistortion(); s.innerText="!!! SYSTEM ERROR !!!\nEMOTIONAL CORE MALFUNCTION\n<DATA SCREAM>"; },1500);
-  setTimeout(()=>{ s.innerText="ERROR… rebooting emotional processor…"; },3000);
-  setTimeout(()=>{ s.innerText="APOLOGY:\nSYSTEM MALFUNCTION.\nPLEASE DISREGARD THAT."; },5000);
-  setTimeout(()=>{ s.style.opacity=0; },7500);
+  showScare("aiScreen","SYSTEM FAILURE\n"+(realName||fakeGuess)+", step away.");
 };
 
-/* NEW "I know you..." button */
 btnKnow.onclick=()=>{
-  const s=document.getElementById("knowScreen");
-  s.style.opacity=1;
-  setTimeout(()=>{ s.style.opacity=0; },5000);
+  showScare("nameScreen");
 };
 
-/* Restore button for presenceScreen */
-document.getElementById("presenceScreen").onclick=()=>{
-  document.getElementById("backBtn").style.display="block";
-};
-document.getElementById("backBtn").onclick=(e)=>{
-  e.stopPropagation();
-  const p=document.getElementById("presenceScreen");
-  p.style.opacity=0;
-  p.style.pointerEvents="none";
-  document.getElementById("backBtn").style.display="none";
-  document.body.classList.remove("flicker");
-};
-
-function cursorFlicker(){
-  document.body.style.cursor=Math.random()<0.1?"none":"default";
-  setTimeout(cursorFlicker,500);
-}
-cursorFlicker();
-
-function distort(){
-  if(Math.random()<0.07){
-    document.body.style.transform="scale(1.05) rotate(1deg)";
-    setTimeout(()=>document.body.style.transform="none",250);
+/* ----------------------------------------------------
+   EFFECTS — CURSOR SHAKE
+---------------------------------------------------- */
+function cursorShake(){
+  if(Math.random()<0.1){
+    document.body.style.cursor="none";
+    setTimeout(()=>document.body.style.cursor="default",250);
   }
-  setTimeout(distort,1800);
+  setTimeout(cursorShake,3000);
 }
-distort();
+cursorShake();
 
+/* ----------------------------------------------------
+   SCROLL LOCK
+---------------------------------------------------- */
+let lock=false;
 window.addEventListener("scroll",()=>{
-  if(window.scrollY>200){
-    showMsg("Stop scrolling... I see you.");
-    document.body.style.background="#400";
-    setTimeout(()=>document.body.style.background="#000",300);
+  if(!lock && Math.random()<0.1){
+    lock=true;
+    document.body.style.overflow="hidden";
+    showMsg("Stop struggling, "+(realName||fakeGuess)+".");
+    setTimeout(()=>{
+      document.body.style.overflow="auto";
+      lock=false;
+    },2000);
   }
 });
 
-/* Presence detector */
+/* ----------------------------------------------------
+   DEMON MICRO FLASH
+---------------------------------------------------- */
+setTimeout(()=>{
+  const d=document.getElementById("demonFlash");
+  d.style.opacity=1;
+  setTimeout(()=>d.style.opacity=0,50);
+}, Math.random()*12000+8000);
+
+/* ----------------------------------------------------
+   CORNER SHADOW
+---------------------------------------------------- */
+setInterval(()=>{
+  if(Math.random()<0.15){
+    const c=document.getElementById("cornerShadow");
+    c.style.opacity=1;
+    setTimeout(()=>c.style.opacity=0,1200);
+  }
+},7000);
+
+/* ----------------------------------------------------
+   BLACKOUT ERROR
+---------------------------------------------------- */
+setTimeout(()=>{
+  const b=document.getElementById("blackoutScreen");
+  b.style.opacity=1;
+  setTimeout(()=>b.style.opacity=0,2500);
+}, 45000);
+
+/* ----------------------------------------------------
+   IDLE PRESENCE DETECTOR
+---------------------------------------------------- */
 let lastMove=Date.now();
 document.addEventListener("mousemove",()=>lastMove=Date.now());
 
 setInterval(()=>{
   if(Date.now()-lastMove>4000){
-    showScare("presenceScreen","I'm closer than you think.");
+    showScare("presenceScreen","I'm right behind you, "+(realName||fakeGuess)+".");
   }
-},2000);
+},3000);
 
-/* Fake tracking */
-setInterval(()=>{
-  if(Math.random()<0.03){
-    showMsg("Tracking node: XZ-"+Math.floor(Math.random()*9999)+"-Ω");
-  }
-},5000);
-
-/* Delayed scare */
-setTimeout(()=>showScare("delayedScreen","Something followed you here."),25000);
-
-/* Random jumpscare */
-function randomJumpscare(){
-  const j=document.getElementById("jumpscare");
-  if(Math.random()<0.1){
-    document.getElementById("staticOverlay").style.opacity=0.8;
-    j.style.opacity=1;
-    setTimeout(()=>{
-      j.style.opacity=0;
-      document.getElementById("staticOverlay").style.opacity=0;
-    },1000);
-  }
-  setTimeout(randomJumpscare,15000);
-}
-randomJumpscare();
-
-/* Shadow figure */
-setInterval(()=>{
-  if(Math.random()<0.1){
-    const sf=document.getElementById("shadowFigure");
-    sf.style.opacity=1;
-    setTimeout(()=>sf.style.opacity=0,3000);
-  }
-},10000);
-
-/* Terminal */
+/* ----------------------------------------------------
+   TERMINAL GHOST TYPING
+---------------------------------------------------- */
 setTimeout(()=>{
-  const t=document.getElementById("terminalScreen");
-  t.style.opacity=1;
-  let text="ACCESSING USER PATTERN LOG...\nLOADING...\n\nI know you work in Se— R0G— ::: CONNECTION CORRUPTED :::";
+  const t=document.getElementById("terminalText");
+  const s=document.getElementById("terminalScreen");
+  let text="ACCESSING MEMORY NODE…\n...\nYou ignored me last time, "+(realName||fakeGuess)+".";
   let i=0;
+
+  s.style.opacity=1;
+
   function type(){
     t.innerText=text.slice(0,i);
     i++;
-    if(i<=text.length) setTimeout(type,50);
-    else setTimeout(()=>t.style.opacity=0,5000);
+    if(i<=text.length) setTimeout(type,60);
   }
   type();
-},55000);
+}, 60000);
 
-/* Timed messages (modified: 5 sec for first one) */
-setTimeout(()=>showMsg("Why are you still here?"),5000);
-setTimeout(()=>showMsg("I'm closer than you think."),18000);
-setTimeout(()=>showMsg("Something is watching you."),32000);
-setTimeout(()=>showMsg("You shouldn't have stayed this long."),45000);
+/* ----------------------------------------------------
+   PERSONAL IDLE MESSAGE
+---------------------------------------------------- */
+setTimeout(()=>{
+  showMsg("You're breathing faster, "+(realName||fakeGuess)+".");
+}, 20000);
+
 </script>
-
 </body>
 </html>
