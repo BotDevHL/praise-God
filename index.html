@@ -138,7 +138,7 @@ body.night .readerBtn {
 }
 
 /* ============================================================
-   PERMANENT MUSIC BAR (Same as previous + night compat)
+   PERMANENT MUSIC BAR
 ============================================================ */
 #musicBar {
   position: fixed;
@@ -153,7 +153,6 @@ body.night .readerBtn {
   flex-direction: column;
   align-items: center;
   z-index: 9997;
-  transition: background 0.6s, border-color 0.6s;
 }
 
 #currentSong {
@@ -214,11 +213,6 @@ body.night .readerBtn {
   font-weight: bold;
 }
 
-/* ============================================================
-   FEATHERS, HALO, INTRO — unchanged from previous version
-   (kept to reduce message length)
-============================================================ */
-
 </style>
 </head>
 
@@ -261,21 +255,19 @@ body.night .readerBtn {
 
 <h1>Holy Scripture Sanctuary</h1>
 
-<!-- BIBLE READER BUTTON SECTION -->
+<!-- BIBLE READER BUTTON -->
 <div class="section">
   <h2>Read the Holy Bible (KJV)</h2>
   <select id="bibleBook">
     <option value="Genesis1">Genesis 1</option>
-    <!-- more books can be added -->
   </select>
   <br><br>
   <button class="musicBtn" onclick="openBibleReader()">Open Bible Reader</button>
 </div>
 
-<!-- PLAYLIST SECTION (NOW AT THE TOP SO YOU CAN SEE IT) -->
+<!-- PLAYLIST SECTION -->
 <div class="section">
   <h2>Worship Music Playlist</h2>
-
   <button class="musicBtn" onclick="playSong('gospel')">Use This Gospel</button>
   <button class="musicBtn" onclick="playSong('holy')">Holy Forever</button>
 </div>
@@ -287,7 +279,7 @@ body.night .readerBtn {
   <div id="psalmOut"></div>
 </div>
 
-<!-- Confession & Healing -->
+<!-- Confession -->
 <div class="section">
   <h2>Confession & Healing</h2>
   <textarea id="confText" placeholder="Confess to God..."></textarea><br><br>
@@ -317,7 +309,7 @@ body.night .readerBtn {
   <div id="encOut"></div>
 </div>
 
-<!-- Prayer Request -->
+<!-- Prayer -->
 <div class="section">
   <h2>Prayer Request</h2>
   <textarea id="prayText" placeholder="Your prayer request..."></textarea><br><br>
@@ -332,14 +324,14 @@ body.night .readerBtn {
   <div id="biblePlanOut"></div>
 </div>
 
-<!-- Streak Tracker -->
+<!-- Streak -->
 <div class="section">
   <h2>Daily Worship Streak</h2>
   <button id="markDayBtn">Mark Today Complete</button>
   <div id="streakOut">0-Day Streak</div>
 </div>
 
-<!-- Prayer Counters Carousel -->
+<!-- Carousel -->
 <div class="section carouselContainer">
   <h2>Prayer Counters</h2>
 
@@ -383,8 +375,49 @@ body.night .readerBtn {
 </div>
 
 <script>
+
 /* =======================================================
-   MUSIC LOGIC (PLAYLIST + BOTTOM BAR)
+   DATA SETS (FIXED — REQUIRED FOR FUNCTIONALITY)
+======================================================= */
+const verses = [
+  {ref:"John 3:16", text:"For God so loved the world that He gave His only begotten Son."},
+  {ref:"Psalm 23:1", text:"The Lord is my shepherd; I shall not want."},
+  {ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee."},
+  {ref:"Romans 8:28", text:"All things work together for good to them that love God."}
+];
+
+const devotionals = [
+  "God walks with you even now.",
+  "Lay your worries in His hands.",
+  "Peace flows from Christ alone.",
+  "His mercy is new this morning."
+];
+
+const psalms = [
+  "Psalm 23 — The Lord is my Shepherd.",
+  "Psalm 91 — He that dwelleth in the secret place of the Most High.",
+  "Psalm 121 — I will lift up mine eyes unto the hills."
+];
+
+const encouragements = [
+  "God is strengthening you.",
+  "You are loved by the Father.",
+  "The Holy Spirit comforts you.",
+  "Christ goes before you today."
+];
+
+const biblePlan = [
+  "Genesis 1–3",
+  "Matthew 1–3",
+  "Psalm 1",
+  "Proverbs 1",
+  "John 1",
+  "Romans 1",
+  "Acts 1"
+];
+
+/* =======================================================
+   MUSIC LOGIC
 ======================================================= */
 
 const musicPlayer = document.getElementById("musicPlayer");
@@ -421,7 +454,8 @@ function stopMusic() {
 
 musicPlayer.ontimeupdate = () => {
   if (musicPlayer.duration) {
-    progressBar.value = (musicPlayer.currentTime / musicPlayer.duration) * 100;
+    progressBar.value =
+      (musicPlayer.currentTime / musicPlayer.duration) * 100;
   }
 };
 
@@ -435,20 +469,16 @@ volumeSlider.oninput = () => {
 };
 
 /* =======================================================
-   NIGHT MODE JS
+   NIGHT MODE
 ======================================================= */
 function toggleNightMode() {
   document.body.classList.toggle("night");
 }
 
 /* =======================================================
-   (Rest of Part 2 scripts continue in Part 3)
-======================================================= */
-
-/* =======================================================
    SCRIPTURE SEARCH
 ======================================================= */
-document.getElementById("searchBox").oninput = function () {
+document.getElementById("searchBox")?.addEventListener("input", function() {
   const q = this.value.toLowerCase();
   const out = document.getElementById("searchResults");
   out.innerHTML = "";
@@ -458,15 +488,15 @@ document.getElementById("searchBox").oninput = function () {
       out.innerHTML += `<b>${v.ref}</b>: ${v.text}<br><br>`;
     }
   });
-};
+});
 
 /* =======================================================
    DEVOTIONAL
 ======================================================= */
-document.getElementById("genDevo").onclick = () => {
+document.getElementById("genDevo")?.addEventListener("click", () => {
   document.getElementById("devoOut").innerText =
     devotionals[Math.floor(Math.random() * devotionals.length)];
-};
+});
 
 /* =======================================================
    PSALM OF THE DAY
@@ -495,19 +525,12 @@ document.getElementById("encBtn").onclick = () => {
 };
 
 /* =======================================================
-   PRAYER REQUESTS
+   PRAYER REQUEST
 ======================================================= */
 document.getElementById("prayBtn").onclick = () => {
-  const txt = document.getElementById("prayText").value.trim();
-
-  if (!txt) {
-    document.getElementById("prayOut").innerText =
-      "Please write a prayer first.";
-  } else {
-    document.getElementById("prayOut").innerText =
-      "Your prayer has been lifted.";
-  }
-
+  const val = document.getElementById("prayText").value.trim();
+  document.getElementById("prayOut").innerText =
+    val ? "Your prayer has been lifted." : "Please write a prayer.";
   document.getElementById("prayText").value = "";
 };
 
@@ -516,10 +539,10 @@ document.getElementById("prayBtn").onclick = () => {
 ======================================================= */
 document.getElementById("confBtn").onclick = () => {
   const mood = document.getElementById("confMood").value;
-  const text = document.getElementById("confText").value.trim();
+  const txt = document.getElementById("confText").value.trim();
 
-  if (!text) {
-    alert("Please write your confession first.");
+  if (!txt) {
+    alert("Write your confession.");
     return;
   }
 
@@ -567,18 +590,14 @@ document.getElementById("markDayBtn").onclick = () => {
   const today = new Date().toDateString();
 
   if (lastDay === today) {
-    alert("You already marked today.");
+    alert("Already marked.");
     return;
   }
 
   if (lastDay) {
-    const diff = Math.floor(
-      (new Date(today) - new Date(lastDay)) /
-        (1000 * 60 * 60 * 24)
-    );
-
-    if (diff === 1) streak++;
-    else streak = 1;
+    const diff =
+      (new Date(today) - new Date(lastDay)) / (1000 * 60 * 60 * 24);
+    streak = diff === 1 ? streak + 1 : 1;
   } else {
     streak = 1;
   }
@@ -592,45 +611,35 @@ document.getElementById("markDayBtn").onclick = () => {
 };
 
 /* =======================================================
-   PRAYER COUNTERS
+   COUNTERS
 ======================================================= */
-let jp = 0,
-  sp = 0,
-  bl = 0,
-  cp = 0;
+let jp = 0, sp = 0, bl = 0, cp = 0;
 
 document.getElementById("jpPlus").onclick = () => {
-  jp++;
-  document.getElementById("jpCount").innerText = jp;
+  jp++; document.getElementById("jpCount").innerText = jp;
 };
 document.getElementById("jpReset").onclick = () => {
-  jp = 0;
-  document.getElementById("jpCount").innerText = jp;
+  jp = 0; document.getElementById("jpCount").innerText = jp;
 };
 
 document.getElementById("spPlus").onclick = () => {
-  sp++;
-  document.getElementById("spCount").innerText = sp;
+  sp++; document.getElementById("spCount").innerText = sp;
 };
 document.getElementById("spReset").onclick = () => {
-  sp = 0;
-  document.getElementById("spCount").innerText = sp;
+  sp = 0; document.getElementById("spCount").innerText = sp;
 };
 
 document.getElementById("blPray").onclick =
 document.getElementById("blForgive").onclick =
 document.getElementById("blEnc").onclick = () => {
-  bl++;
-  document.getElementById("blCount").innerText = bl;
+  bl++; document.getElementById("blCount").innerText = bl;
 };
 
 document.getElementById("cpPlus").onclick = () => {
-  cp++;
-  document.getElementById("cpCount").innerText = cp;
+  cp++; document.getElementById("cpCount").innerText = cp;
 };
 document.getElementById("cpReset").onclick = () => {
-  cp = 0;
-  document.getElementById("cpCount").innerText = cp;
+  cp = 0; document.getElementById("cpCount").innerText = cp;
 };
 
 /* =======================================================
@@ -644,60 +653,46 @@ function showSlide(i) {
     s.style.display = idx === i ? "block" : "none";
   });
 }
-
 document.getElementById("prevSlide").onclick = () => {
   slideIndex = (slideIndex - 1 + slides.length) % slides.length;
   showSlide(slideIndex);
 };
-
 document.getElementById("nextSlide").onclick = () => {
   slideIndex = (slideIndex + 1) % slides.length;
   showSlide(slideIndex);
 };
-
 showSlide(0);
 
 /* =======================================================
    FULLSCREEN BIBLE READER (KJV)
 ======================================================= */
-
-/* Small KJV sample (Genesis 1) */
 const bibleText = {
   Genesis1: `
 <b>Genesis 1 (KJV)</b><br><br>
-
 1 In the beginning God created the heaven and the earth.<br><br>
 2 And the earth was without form, and void; and darkness was upon the face of the deep...<br><br>
 3 And God said, Let there be light: and there was light.<br><br>
-4 And God saw the light, that it was good...<br><br>
-(You can add the full chapter later)
+(You may add full text later.)
 `
 };
 
 function openBibleReader() {
   const book = document.getElementById("bibleBook").value;
-  document.getElementById("bibleReaderBox").innerHTML =
-    bibleText[book];
-  document.getElementById("bibleReaderOverlay").style.display =
-    "flex";
+  document.getElementById("bibleReaderBox").innerHTML = bibleText[book];
+  document.getElementById("bibleReaderOverlay").style.display = "flex";
 }
 
 function closeBibleReader() {
-  document.getElementById("bibleReaderOverlay").style.display =
-    "none";
+  document.getElementById("bibleReaderOverlay").style.display = "none";
   stopAutoScroll();
 }
 
-/* Auto-scroll engine */
 let scrollSpeed = 1;
 let scrollInterval = null;
 
 function toggleScroll() {
-  if (scrollInterval) {
-    stopAutoScroll();
-  } else {
-    startAutoScroll();
-  }
+  if (scrollInterval) stopAutoScroll();
+  else startAutoScroll();
 }
 
 function startAutoScroll() {
@@ -712,13 +707,8 @@ function stopAutoScroll() {
   scrollInterval = null;
 }
 
-function scrollFaster() {
-  scrollSpeed += 0.5;
-}
-
-function scrollSlower() {
-  scrollSpeed = Math.max(0.5, scrollSpeed - 0.5);
-}
+function scrollFaster() { scrollSpeed += 0.5; }
+function scrollSlower() { scrollSpeed = Math.max(0.5, scrollSpeed - 0.5); }
 
 </script>
 </body>
