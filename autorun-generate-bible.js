@@ -1,7 +1,5 @@
 import fs from "fs";
 import https from "https";
-// Clean, stable KJV JSON source
-const url = "https://raw.githubusercontent.com/thiagobodruk/bible/master/json/kjv.json";
 
 // Canonical 66-book order
 const bookOrder = [
@@ -20,82 +18,90 @@ const bookOrder = [
 function generate() {
   console.log("Downloading KJV Bible…");
 
-  https.get(url, res => {
-    let buf = "";
-    res.on("data", chunk => buf += chunk);
-    res.on("end", () => {
-      try {
-        const kjv = JSON.parse(buf);
+  https.get(
+    {
+      hostname: "raw.githubusercontent.com",
+      path: "/thiagobodruk/bible/master/json/kjv.json",
+      headers: { "User-Agent": "Mozilla/5.0" }
+    },
+    res => {
+      let buf = "";
+      res.on("data", chunk => buf += chunk);
+      res.on("end", () => {
+        try {
+          const kjv = JSON.parse(buf);
 
-        const books = {};
-        const chapterIndex = {};
-        const verseIndex = {};
-        const searchIndex = {};
+          const books = {};
+          const chapterIndex = {};
+          const verseIndex = {};
+          const searchIndex = {};
 
-        const stopWords = new Set([
-          "the","and","a","an","of","to","in","that","is","it","for",
-          "with","as","on","be","he","she","they","them","his","her",
-          "but","or","by","from","this","these","those","are","was","were"
-        ]);
+          const stopWords = new Set([
+            "the","and","a","an","of","to","in","that","is","it","for","with","as","on",
+            "be","he","she","they","them","his","her","but","or","by","from","this",
+            "these","those","are","was","were"
+          ]);
 
-        kjv.forEach(v => {
-          const book = v.book.replace(/\s+/g, "");
-          const chapter = v.chapter;
-          const verseNum = v.verse;
-          const text = v.text;
+          kjv.forEach(v => {
+            const book = v.book.replace(/\s+/g, "");
+            const chapter = v.chapter;
+            const verseNum = v.verse;
+            const text = v.text;
+            const ref = `${v.book} ${chapter}:${verseNum}`;
 
-          // Build nested book structure
-          if (!books[book]) books[book] = {};
-          if (!books[book][chapter]) books[book][chapter] = {};
-          books[book][chapter][verseNum] = text;
+            // Books
+            if (!books[book]) books[book] = {};
+            if (!books[book][chapter]) books[book][chapter] = {};
+            books[book][chapter][verseNum] = text;
 
-          // Build chapter index
-          if (!chapterIndex[book]) chapterIndex[book] = 0;
-          if (chapter > chapterIndex[book]) chapterIndex[book] = chapter;
+            // Chapter count
+            if (!chapterIndex[book]) chapterIndex[book] = 0;
+            if (chapter > chapterIndex[book]) chapterIndex[book] = chapter;
 
-          // Build verseIndex
-          const ref = `${v.book} ${chapter}:${verseNum}`;
-          verseIndex[ref] = text;
+            // Verse index
+            verseIndex[ref] = text;
 
-          // Build search index
-          const clean = text
-            .toLowerCase()
-            .replace(/[^a-z0-9\s]/g, "")
-            .split(/\s+/);
+            // Search index
+            const words = text
+              .toLowerCase()
+              .replace(/[^a-z0-9\s]/g, "")
+              .split(/\s+/);
 
-          clean.forEach(word => {
-            if (!word || stopWords.has(word)) return;
-            if (!searchIndex[word]) searchIndex[word] = [];
-            searchIndex[word].push(ref);
+            for (const w of words) {
+              if (!w || stopWords.has(w)) continue;
+              if (!searchIndex[w]) searchIndex[w] = [];
+              searchIndex[w].push(ref);
+            }
           });
-        });
 
-        // Make folder
-        fs.mkdirSync("bible", { recursive: true });
+          // Make bible folder
+          fs.mkdirSync("bible", { recursive: true });
 
-        // Save 66 books
-        for (const b in books) {
-          fs.writeFileSync(`bible/${b}.json`, JSON.stringify(books[b], null, 2));
+          // Save 66 books
+          for (const b in books) {
+            fs.writeFileSync(`bible/${b}.json`, JSON.stringify(books[b], null, 2));
+          }
+
+          // Save indexes
+          fs.writeFileSync("bible/chapterIndex.json", JSON.stringify(chapterIndex, null, 2));
+          fs.writeFileSync("bible/verseIndex.json", JSON.stringify(verseIndex, null, 2));
+          fs.writeFileSync("bible/bookOrder.json", JSON.stringify(bookOrder, null, 2));
+          fs.writeFileSync("bible/searchIndex.json", JSON.stringify(searchIndex, null, 2));
+
+          console.log("✓ All 66 Bible books created.");
+          console.log("✓ chapterIndex.json created.");
+          console.log("✓ verseIndex.json created.");
+          console.log("✓ bookOrder.json created.");
+          console.log("✓ searchIndex.json created.");
+
+        } catch (e) {
+          console.log("JSON parse error:", e.message);
+          console.log("Response begins with:\n", buf.slice(0, 200));
         }
-
-        // Save index files
-        fs.writeFileSync("bible/chapterIndex.json", JSON.stringify(chapterIndex, null, 2));
-        fs.writeFileSync("bible/verseIndex.json", JSON.stringify(verseIndex, null, 2));
-        fs.writeFileSync("bible/bookOrder.json", JSON.stringify(bookOrder, null, 2));
-        fs.writeFileSync("bible/searchIndex.json", JSON.stringify(searchIndex, null, 2));
-
-        console.log("✓ All 66 Bible books created.");
-        console.log("✓ chapterIndex.json created.");
-        console.log("✓ verseIndex.json created.");
-        console.log("✓ bookOrder.json created.");
-        console.log("✓ searchIndex.json created.");
-
-      } catch (e) {
-        console.error("Error:", e.message);
-      }
-    });
-  });
+      });
+    }
+  );
 }
 
-// Auto-run when Codespaces starts
+// Auto-run
 generate();
